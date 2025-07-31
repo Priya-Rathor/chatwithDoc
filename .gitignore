@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.old
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Python package cache
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Test and coverage outputs
+.coverage
+htmlcov/
+.tox/
+.cache/
+pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code Python environment history
+.python-version
+
+# File uploads or temp files (if any)
+uploads/
+temp/
+tmp/
+
+# FAISS index files (if used)
+*.index
+*.faiss
