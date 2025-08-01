@@ -11,7 +11,7 @@
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991?style=flat-square&logo=openai&logoColor=white)](https://openai.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-[🚀 **Live Demo**](https://chatwithdoc-2.onrender.com) | [📖 **Documentation**](#documentation) | [🛠️ **Installation**](#installation) | [🎯 **Features**](#features)
+[🚀 **Live Demo**]([https://chatwithdoc-2.onrender.com](https://priya-rathor.github.io/chatwithDoc/#)) | [📖 **Documentation**](#documentation) | [🛠️ **Installation**](#installation) | [🎯 **Features**](#features)
 
 </div>
 
