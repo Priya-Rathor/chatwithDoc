@@ -11,7 +11,7 @@
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991?style=flat-square&logo=openai&logoColor=white)](https://openai.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-[🚀 **Live Demo**]([https://chatwithdoc-2.onrender.com](https://priya-rathor.github.io/chatwithDoc/#)) | [📖 **Documentation**](#documentation) | [🛠️ **Installation**](#installation) | [🎯 **Features**](#features)
+[🚀 **Live Demo**](https://priya-rathor.github.io/chatwithDoc/#) | [📖 **Documentation**](#documentation) | [🛠️ **Installation**](#installation) | [🎯 **Features**](#features)
 
 </div>
 
@@ -119,7 +119,7 @@ graph TB
 
 4. **Run the application**
    ```bash
-   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+   uvicorn app:app --host 0.0.0.0 --port 8000 --reload
    ```
 
 5. **Access the application**
@@ -360,9 +360,6 @@ flake8 .
 - Verify vector index was built correctly
 
 </details>
-
-
-
 
 ## 🙏 Acknowledgments
 
