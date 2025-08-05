@@ -17,8 +17,7 @@ from pydantic import BaseModel
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
-import openai
-from openai import OpenAI
+import google.generativeai as genai
 
 # Document processing
 import PyPDF2
@@ -72,44 +71,40 @@ class DocumentChunk(BaseModel):
 embedding_model = None
 vector_index = None
 document_chunks = []
-openai_client = None
+gemini_model = None
 
 class RAGSystem:
     def __init__(self):
         self.embedding_model = None
         self.vector_index = None
         self.document_chunks = []
-        self.openai_client = None
+        self.gemini_model = None
         self.feedback_log = []
         
     def initialize_models(self):
-        """Initialize embedding model and OpenAI client"""
+        """Initialize embedding model and Gemini client"""
         try:
             # Initialize SentenceTransformer for embeddings
             self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
             logger.info("Embedding model loaded successfully")
             
-            # Initialize OpenAI client (requires OPENAI_API_KEY environment variable)
-            api_key = os.getenv("OPENAI_API_KEY")
+            # Initialize Gemini client (requires GEMINI_API_KEY environment variable)
+            api_key = os.getenv("GEMINI_API_KEY", "AIzaSyCuK9KFbeMxI5nzr8D8RvNpSW7cunHamig")
             if api_key and api_key != "your-actual-api-key-here":
-                self.openai_client = OpenAI(api_key=api_key)
-                logger.info("OpenAI client initialized successfully")
+                genai.configure(api_key=api_key)
+                self.gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+                logger.info("Gemini client initialized successfully")
                 
                 # Test the API key with a simple call
                 try:
-                    # Make a test call to verify the key works
-                    test_response = self.openai_client.chat.completions.create(
-                        model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": "Test"}],
-                        max_tokens=5
-                    )
-                    logger.info("OpenAI API key verified successfully")
+                    test_response = self.gemini_model.generate_content("Test")
+                    logger.info("Gemini API key verified successfully")
                 except Exception as e:
-                    logger.error(f"OpenAI API key verification failed: {e}")
-                    self.openai_client = None
+                    logger.error(f"Gemini API key verification failed: {e}")
+                    self.gemini_model = None
                     
             else:
-                logger.warning("OPENAI_API_KEY not found or is placeholder. Using fallback response generation.")
+                logger.warning("GEMINI_API_KEY not found or is placeholder. Using fallback response generation.")
                 
         except Exception as e:
             logger.error(f"Error initializing models: {e}")
@@ -278,9 +273,9 @@ class RAGSystem:
         elif user_role.lower() == "developer":
             role_context = "Please focus on technical details and implementations. "
         
-        if self.openai_client:
+        if self.gemini_model:
             try:
-                # Use OpenAI API
+                # Use Gemini API
                 prompt = f"""
 {role_context}Based on the following context, please answer the user's question. 
 If the answer cannot be found in the context, please say so clearly.
@@ -293,27 +288,18 @@ Question: {query}
 Please provide a helpful answer and cite the sources where relevant information was found.
 """
                 
-                response = self.openai_client.chat.completions.create(
-                    model="gpt-4o",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant that answers questions based on provided context. Always cite your sources."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=500,
-                    temperature=0.7
-                )
-                
-                return response.choices[0].message.content
+                response = self.gemini_model.generate_content(prompt)
+                return response.text
                 
             except Exception as e:
-                logger.error(f"Error calling OpenAI API: {e}")
+                logger.error(f"Error calling Gemini API: {e}")
                 # Fallback to simple response
                 return self._generate_fallback_response(query, retrieved_chunks, user_role)
         else:
             return self._generate_fallback_response(query, retrieved_chunks, user_role)
     
     def _generate_fallback_response(self, query: str, retrieved_chunks: List[tuple], user_role: str) -> str:
-        """Generate a simple fallback response when OpenAI is not available"""
+        """Generate a simple fallback response when Gemini is not available"""
         if not retrieved_chunks:
             return "I couldn't find relevant information to answer your question."
         
@@ -324,7 +310,7 @@ Please provide a helpful answer and cite the sources where relevant information 
             response_parts.append(f"   {chunk.content[:200]}...")
             response_parts.append("")
         
-        response_parts.append("Please note: This is a basic response. For more sophisticated answers, configure the OpenAI API key.")
+        response_parts.append("Please note: This is a basic response. For more sophisticated answers, configure the Gemini API key.")
         
         return "\n".join(response_parts)
     
@@ -472,7 +458,7 @@ async def get_stats():
         "positive_feedback": sum(1 for f in rag_system.feedback_log if f["helpful"]),
         "embedding_model": "all-MiniLM-L6-v2",
         "vector_db": "FAISS",
-        "llm_available": rag_system.openai_client is not None
+        "llm_available": rag_system.gemini_model is not None
     }
 
 @app.get("/documents/")
@@ -558,7 +544,7 @@ async def delete_all_documents():
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
-    # Set OpenAI API key from environment variable or .env file
+    # Set Gemini API key from environment variable or .env file
     # The key is now loaded automatically by load_dotenv() at the top
     
     uvicorn.run(
