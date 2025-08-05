@@ -1,6 +1,8 @@
+# Core dependencies
 setuptools>=68.0.0
 wheel>=0.40.0
 
+# FastAPI and server
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
@@ -15,20 +17,25 @@ faiss-cpu==1.7.4
 sentence-transformers==2.2.2
 numpy==1.24.3
 
-# LLM support
-openai==1.30.1
+# LLM support (Google Gemini instead of OpenAI)
+google-generativeai==0.3.2
+
+# PyTorch - use CPU version for Render
+torch==2.1.0+cpu
+torchvision==0.16.0+cpu
+torchaudio==2.1.0+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Transformers (if needed by sentence-transformers)
 transformers==4.35.0
-torch==2.1.0
 
 # Additional utilities
 python-dotenv==1.0.0
 requests==2.31.0
 aiofiles==23.2.1
 
-
-
-# Development and testing
-pytest==7.4.3
-pytest-asyncio==0.21.1
-black==23.11.0
-flake8==6.1.0
+# Remove development dependencies for production
+# pytest==7.4.3
+# pytest-asyncio==0.21.1
+# black==23.11.0
+# flake8==6.1.0
